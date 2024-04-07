@@ -10,7 +10,8 @@ const newScheema = new Schema({
     author: String,
     publishDate: Date,
     categories: Array,
-    status: Boolean
+    status: Boolean,
+    deletedDate: Date
 }, {
     versionKey: false
 })
