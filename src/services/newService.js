@@ -47,11 +47,13 @@ export const newsByCategories = async (category) => {
 export const newsById = async (newId) => {
     try {
         const news = await NewModel.findOne({ _id: newId });
-        const image = await getImage(news);
-        if (image) {
-            news.imagePath = image;
-            console.log(news);
-        }
+        try {
+            const image = await getImage(news);
+            if (image) {
+                news.imagePath = image;
+                console.log(news);
+            }
+        } catch (error) {}
 
         return news;
     } catch (error) {
