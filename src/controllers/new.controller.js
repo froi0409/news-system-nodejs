@@ -1,4 +1,4 @@
-import { allNews, deleteNewById, newNew, newsByCategories as newsByCategory, newsById } from "../services/newService.js";
+import { allDeletedNews, allNews, deleteNewById, newNew, newsByCategories as newsByCategory, newsById, deleteReportedNewById } from "../services/newService.js";
 
 export const createNew = async (req, res) => {
     try {
@@ -33,6 +33,16 @@ export const getAllNews = async (req, res) => {
     }
 }
 
+export const getAllDeletedNews = async (req, res) => {
+    try {
+        const news = await allDeletedNews();
+        return res.status(200).json(news);
+    } catch (error) {
+        console.error(error);
+        return res.status(500).json(error);
+    }
+}
+
 export const getAllByCategory = async (req, res) => {
     try {
         const news = await newsByCategory(req.params.category);
@@ -46,6 +56,11 @@ export const getAllByCategory = async (req, res) => {
 export const getById = async (req, res) => {
     try {
         const news = await newsById(req.params.id);
+
+        if (!news) {
+            res.status(404).json({ message: 'new not found or delted' })
+        }
+
         return res.status(200).json(news);
     } catch (error) {
         console.error(error);
@@ -66,3 +81,15 @@ export const deleteById = async (req, res) => {
     }
 }
 
+export const deleteReportedById = async (req, res) => {
+    try {
+        const newToDelete = await deleteReportedNewById(req.params.id, req.params.report);
+        if (!newToDelete) {
+            return res.status(404).json({ message: 'New was not found' });
+        }
+        return res.status(200).json(newToDelete);
+    } catch (error) {
+        console.error(error);
+        return res.status(500).json(error);       
+    }
+}

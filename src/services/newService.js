@@ -18,8 +18,16 @@ export const newNew = async (newData) => {
 
 export const allNews = async () => {
     try {
-        const news = await NewModel.find({});
+        const news = await NewModel.find({ status: true });
         return news;
+    } catch (error) {
+        throw error;
+    }
+}
+
+export const allDeletedNews = async () => {
+    try {
+        const news = await NewModel.find({ status: false })
     } catch (error) {
         throw error;
     }
@@ -27,7 +35,7 @@ export const allNews = async () => {
 
 export const newsByCategories = async (category) => {
     try {
-        const news = await NewModel.find({ categories: category });
+        const news = await NewModel.find({ categories: category, status: true });
 
         for (const newEntity of news) {
             try {
@@ -46,7 +54,7 @@ export const newsByCategories = async (category) => {
 
 export const newsById = async (newId) => {
     try {
-        const news = await NewModel.findOne({ _id: newId });
+        const news = await NewModel.findOne({ _id: newId, status: true });
         try {
             const image = await getImage(news);
             if (image) {
@@ -63,10 +71,19 @@ export const newsById = async (newId) => {
 
 export const deleteNewById = async (newId) => {
     try {
-        const newToDelete = await NewModel.deleteOne({ _id: newId });
+        const newToDelete = await NewModel.updateOne({ _id: newId }, { $set: { 'status': false } });
         return newToDelete;
     } catch (error) {
-        
+        throw error;
+    }
+}
+
+export const deleteReportedNewById = async (newId, report) => {
+    try {
+        const newToDelete = await NewModel.updateOne({ _id: newId }, { $set: { 'status': false, report: report } });
+        return newToDelete;
+    } catch (error) {
+        throw error;
     }
 }
 
@@ -91,17 +108,22 @@ const saveImage = async (newData, newNew) => {
 
 const getImage = (newData) => {
     return new Promise(async (resolve, reject) => {
-        const imagePath = `public/images/${newData.imagePath}`;
+        try {
+            const imagePath = `public/images/${newData.imagePath}`;
 
-        fs.readFile(imagePath, (err, data) => {
-            if (err) {
-                console.error(err);
-                reject();
-            } else {
-                const imageBase64 = data.toString('base64');
-                resolve(imageBase64);
-            }
-        })
+            fs.readFile(imagePath, (err, data) => {
+                if (err) {
+                    console.error(err);
+                    reject();
+                } else {
+                    const imageBase64 = data.toString('base64');
+                    resolve(imageBase64);
+                }
+            });
+        } catch (error) {
+            console.error(error);
+            reject();
+        }
 
     });
 }

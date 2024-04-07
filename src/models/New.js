@@ -11,7 +11,8 @@ const newScheema = new Schema({
     publishDate: Date,
     categories: Array,
     status: Boolean,
-    deletedDate: Date
+    deletedDate: Date,
+    report: String
 }, {
     versionKey: false
 })
