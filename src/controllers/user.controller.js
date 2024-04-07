@@ -55,7 +55,7 @@ export const forgotMyPasswordSendEmail = async (req, res) => {
     }
 }
 
-const updataUserPassword = async (req, res) => {
+export const updateUserPassword = async (req, res) => {
     try {
         const userData = {
             username: req.body.username,

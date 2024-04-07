@@ -53,7 +53,7 @@ export const findUserByUsername = async (username) => {
 
 export const updatePassword = async (userData) => {
     try {
-        let user = await UserModel.findOne({ username: userData });
+        let user = await UserModel.findOne({ username: userData.username });
         
         if (user && await comparePasswords(userData.oldPassword, user.password)) {
             const hashedPassword = await hashPassword(userData.newPassword);
