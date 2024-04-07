@@ -1,4 +1,5 @@
-import { loginUser, newUser } from "../services/userService.js";
+import { forgotPassword } from "../services/emailService.js";
+import { loginUser, newUser, updatePassword } from "../services/userService.js";
 
 export const login = async (req, res) => {
     try {
@@ -40,4 +41,37 @@ export const createUser = async (req, res) => {
         console.error(error);
         return res.status(500).json(error);
     }
+}
+
+export const forgotMyPasswordSendEmail = async (req, res) => {
+    try {
+        const mail = await forgotPassword.sendMail(req, res);
+
+        return res.status(200).json({ message: 'Email was sent' });
+
+    } catch (error) {
+        console.error(error);
+        return res.status(500).json(error);
+    }
+}
+
+const updataUserPassword = async (req, res) => {
+    try {
+        const userData = {
+            username: req.body.username,
+            oldPassword: req.body.oldPassword,
+            newPassword: req.body.newPassword
+        }
+
+        const userUpdated = await updatePassword(userData);
+
+        if (userUpdated) {
+            return res.status(201).json(userUpdated);
+        }
+        return res.status(400).json({ message: 'Old password not match' });
+    } catch (error) {
+        console.error(error);
+        return res.status(500).json(error);
+    }
+
 }

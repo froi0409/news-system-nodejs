@@ -51,6 +51,37 @@ export const findUserByUsername = async (username) => {
     }
 }
 
+export const updatePassword = async (userData) => {
+    try {
+        let user = await UserModel.findOne({ username: userData });
+        
+        if (user && await comparePasswords(userData.oldPassword, user.password)) {
+            const hashedPassword = await hashPassword(userData.newPassword);
+            
+            user = await UserModel.updateOne({ username: userData.username }, { $set: { password: hashedPassword } });
+            return user;
+        }
+        return null;
+    } catch (error) {
+        throw error;
+    }
+}
+
+export const updatePasswordToken = async (userData) => {
+    try {
+        let user = await UserModel.findOne({ username: userData.username });
+
+        if (user && user.tokenResetPassword && user.tokenResetPassword === userData.token) {
+            const hashedPassword = await hashPassword(userData.newPassword);
+
+            const userUpdated = await UserModel.updateOne({ username: userData.username }, { $set: { password: hashedPassword } });
+            return userUpdated;
+        }
+    } catch (error) {
+        throw error;
+    }
+}
+
 const hashPassword = async (password) => {
     try {
         const salt = await bcrypt.genSalt(Number(process.env.SALTS));

@@ -10,7 +10,8 @@ const userSchema = new Schema({
     birthDate: Date,
     role: String,
     email: String,
-    phone: String
+    phone: String,
+    tokenResetPassword: String
 }, {
     versionKey: false
 })
