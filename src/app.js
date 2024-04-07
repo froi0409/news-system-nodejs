@@ -1,5 +1,12 @@
 import express, { urlencoded } from 'express';
+import { startConnection } from './configs/database.config.js';
 import cors from 'cors';
+
+// Routes
+import UserRoutes from './routes/user.routes.js';
+import NewRoutes from './routes/new.routes.js';
+
+startConnection();
 
 const app = express();
 
@@ -13,6 +20,9 @@ app.get('/', (req, res) => {
         message: 'News System'
     })
 });
+
+app.use('/v1/user', UserRoutes);
+app.use('/v1/new', NewRoutes);
 
 export { app }
 
