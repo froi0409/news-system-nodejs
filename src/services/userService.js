@@ -7,6 +7,10 @@ config();
 
 export const newUser = async (userData) => {
     try {
+        if (await findUserByUsername(userData.username)) {
+            return null;
+        }
+        
         // encrypting the password
         userData.password = await hashPassword(userData.password);
 

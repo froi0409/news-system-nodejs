@@ -32,7 +32,10 @@ export const createUser = async (req, res) => {
         }
 
         const userSaved = await newUser(newUserData);
-        return res.status(201).json(userSaved);        
+        if (userSaved) {
+            return res.status(201).json(userSaved);        
+        }
+        return res.status(400).json({ message: 'User already exists' });
     } catch (error) {
         console.error(error);
         return res.status(500).json(error);
