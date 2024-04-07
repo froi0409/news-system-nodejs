@@ -28,8 +28,18 @@ export const allNews = async () => {
 export const newsByCategories = async (category) => {
     try {
         const news = await NewModel.find({ categories: category });
+
+        for (const newEntity of news) {
+            try {
+                const image = await getImage(newEntity);
+                if (image) {
+                    newEntity.imagePath = image;
+                }
+            } catch (error) { }
+        }
+
         return news;
-    } catch {
+    } catch (error) {
         throw error;
     }
 }
@@ -37,6 +47,12 @@ export const newsByCategories = async (category) => {
 export const newsById = async (newId) => {
     try {
         const news = await NewModel.findOne({ _id: newId });
+        const image = await getImage(news);
+        if (image) {
+            news.imagePath = image;
+            console.log(news);
+        }
+
         return news;
     } catch (error) {
         throw error;
@@ -69,6 +85,23 @@ const saveImage = async (newData, newNew) => {
     } catch (error) {
         return newSaved;
     }
+}
+
+const getImage = (newData) => {
+    return new Promise(async (resolve, reject) => {
+        const imagePath = `public/images/${newData.imagePath}`;
+
+        fs.readFile(imagePath, (err, data) => {
+            if (err) {
+                console.error(err);
+                reject();
+            } else {
+                const imageBase64 = data.toString('base64');
+                resolve(imageBase64);
+            }
+        })
+
+    });
 }
 
 function getFileExtension(filename) {
