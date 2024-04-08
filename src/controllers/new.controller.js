@@ -6,13 +6,14 @@ export const createNew = async (req, res) => {
         const jwtParams = await decodeJwt(req.headers.authorization);
         const date = getTodayDate();
         
+        console.log(jwtParams);
 
         const newData = {
             title: req.body.title,
             image: req.file,
             description: req.body.description,
             body: req.body.body.replace(/\n/g, '<br>'),
-            author: jwtParams.user,
+            author: jwtParams.username,
             publishDate: new Date(date),
             categories: req.body.categories,
             status: true
