@@ -16,14 +16,6 @@ export const newNew = async (newData) => {
     }
 }
 
-export const allNews = async () => {
-    try {
-        const news = await NewModel.find({ status: true });
-        return news;
-    } catch (error) {
-        throw error;
-    }
-}
 
 export const allDeletedNews = async () => {
     try {
@@ -33,9 +25,29 @@ export const allDeletedNews = async () => {
     }
 }
 
-export const newsByCategories = async (category) => {
+export const allNews = async () => {
     try {
-        const news = await NewModel.find({ categories: category, status: true });
+        const news = await NewModel.find({ status: true });
+        
+        for (const newEntity of news) {
+            try {
+                const image = await getImage(newEntity);
+                if (image) {
+                    newEntity.imagePath = image;
+                }
+            } catch (error) {
+            }
+        }
+
+        return news;
+    } catch (error) {
+        throw error;
+    }
+}
+
+export const newsByCategories = async (category, id) => {
+    try {
+        const news = await NewModel.find({ _id: { $ne: id }, categories: category, status: true }).sort({ publishDate: -1 }).limit(3);;
 
         for (const newEntity of news) {
             try {
@@ -45,7 +57,7 @@ export const newsByCategories = async (category) => {
                 }
             } catch (error) { }
         }
-
+        
         return news;
     } catch (error) {
         throw error;
@@ -59,10 +71,9 @@ export const newsById = async (newId) => {
             const image = await getImage(news);
             if (image) {
                 news.imagePath = image;
-                console.log(news);
             }
         } catch (error) {}
-
+        
         return news;
     } catch (error) {
         throw error;
@@ -99,7 +110,7 @@ const saveImage = async (newData, newNew) => {
         fs.writeFileSync(publicPath, image.buffer);
         console.log(`imagen ${newFileName} guardada con éxito`);
 
-        const addImagePath = await NewModel.updateOne({ _id: newNew._id }, { $set: { imagePath: newFileName } });        
+        const addImagePath = await NewModel.updateOne({ _id: newNew._id }, { $set: { imagePath: newFileName, imageType: extension } });        
         console.log('Path acutalizado en la base de datos con éxito');
     } catch (error) {
         return newSaved;
@@ -126,6 +137,11 @@ const getImage = (newData) => {
         }
 
     });
+}
+
+export const getTodayDate = () => {
+    const today = new Date();
+    return `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, '0')}-${String(today.getDate()).padStart(2, '0')}`;
 }
 
 function getFileExtension(filename) {

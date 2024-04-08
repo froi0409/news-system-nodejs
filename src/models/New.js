@@ -5,6 +5,7 @@ const model = mongoose.model;
 const newScheema = new Schema({
     title: String,
     imagePath: String,
+    imageType: String,
     description: String,
     body: String,
     author: String,

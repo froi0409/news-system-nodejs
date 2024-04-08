@@ -36,7 +36,7 @@ export const forgotPassword = {
                 from: `${process.env.EMAIL_ADDRESS}`,
                 to: user.email,
                 subject: 'Restablecer Contraseña',
-                text: `${process.env.EMAIL_PORT}/v1/resetPassword/${user.username}/${token}`
+                text: `A continuación te brindamos tu enlace para reestablecer contraseña (recuerda no compartirlo):    ${process.env.EMAIL_PORT}/resetPassword/${user.username}/${token}`
             };
 
             transporter.sendMail(mailOptions, (err, response) => {

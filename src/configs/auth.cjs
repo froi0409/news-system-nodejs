@@ -47,3 +47,20 @@ exports.Roles = {
     ADMINISTRATOR: ['ADMINISTRATOR'],
     ALL: ['USER', 'ADMINISTRATOR']
 }
+
+exports.decodeJwt = function(auth) {
+    if (auth && auth.startsWith('Bearer ')){
+        const token = auth.replace('Bearer ', '');
+        try {
+            const decodedToken = jwt.verify(token, process.env.SECRET);
+            return {
+                username: decodedToken.user,
+                role: decodedToken.role,
+                firstName: decodedToken.firstName,
+                lastName: decodedToken.lastName
+            }
+        } catch (error) {
+            console.error(error);
+        }
+    }
+}

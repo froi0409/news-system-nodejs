@@ -10,7 +10,7 @@ const upload = multer({ storage: storage });
 router.post('', authorize(Roles.ALL), upload.single('image'),createNew);
 
 router.get('/getAll', authorize(Roles.ALL), getAllNews);
-router.get('/getByCategory/:category', authorize(Roles.ALL), getAllByCategory);
+router.get('/getByCategory/:category/:id', authorize(Roles.ALL), getAllByCategory);
 router.get('/getById/:id', authorize(Roles.ALL), getById);
 router.get('/getAllDeleted', authorize(Roles.ADMINISTRATOR), getAllDeletedNews);
 

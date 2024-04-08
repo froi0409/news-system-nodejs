@@ -1,3 +1,4 @@
+import { Roles } from "../configs/auth.cjs";
 import { forgotPassword } from "../services/emailService.js";
 import { loginUser, newUser, updatePassword } from "../services/userService.js";
 
@@ -27,7 +28,7 @@ export const createUser = async (req, res) => {
             firstName: req.body.firstName,
             lastName: req.body.lastName,
             birthDate: new Date(req.body.birthDate),
-            role: req.body.role,
+            role: Roles.USER,
             email: req.body.email,
             phone: req.body.phone
         }
@@ -44,7 +45,9 @@ export const createUser = async (req, res) => {
 }
 
 export const forgotMyPasswordSendEmail = async (req, res) => {
+    console.log(req.data);
     try {
+
         const mail = await forgotPassword.sendMail(req, res);
 
         return res.status(200).json({ message: 'Email was sent' });
@@ -74,4 +77,24 @@ export const updateUserPassword = async (req, res) => {
         return res.status(500).json(error);
     }
 
+}
+
+export const updateUSerPasswordToken = async (req, res) => {
+    try {
+        const userData = {
+            username: req.body.username,
+            newPassword: req.body.newPassword,
+            token: req.body.token
+        }
+
+        const userUpdated = await updateUSerPasswordToken(userData);
+
+        if (userUpdated) {
+            return res.status(201).json(userUpdated)
+        }
+        return res.status(400).json({ message: 'Error updating password' });
+    } catch (error) {
+        console.error(error);
+        return res.status(500).json(error);
+    }
 }

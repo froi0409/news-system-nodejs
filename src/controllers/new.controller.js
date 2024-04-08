@@ -1,16 +1,21 @@
-import { allDeletedNews, allNews, deleteNewById, newNew, newsByCategories as newsByCategory, newsById, deleteReportedNewById } from "../services/newService.js";
+import { decodeJwt } from "../configs/auth.cjs";
+import { allDeletedNews, allNews, deleteNewById, newNew, newsByCategories as newsByCategory, newsById, deleteReportedNewById, getTodayDate } from "../services/newService.js";
 
 export const createNew = async (req, res) => {
     try {
+        const jwtParams = await decodeJwt(req.headers.authorization);
+        const date = getTodayDate();
+        
+
         const newData = {
             title: req.body.title,
             image: req.file,
             description: req.body.description,
-            body: req.body.body,
-            author: req.body.author,
-            publishDate: new Date(req.body.publishDate),
+            body: req.body.body.replace(/\n/g, '<br>'),
+            author: jwtParams.user,
+            publishDate: new Date(date),
             categories: req.body.categories,
-            status: req.body.status
+            status: true
         }
         console.log(newData);
 
@@ -45,7 +50,7 @@ export const getAllDeletedNews = async (req, res) => {
 
 export const getAllByCategory = async (req, res) => {
     try {
-        const news = await newsByCategory(req.params.category);
+        const news = await newsByCategory(req.params.category, req.params.id);
         return res.status(200).json(news);
     } catch (error) {
         console.error(error);
